@@ -5,18 +5,10 @@ import (
 	"fmt"
 	"regexp"
 
+	"github.com/ibrahaknazarov/phone/config"
 	phonedb "github.com/ibrahaknazarov/phone/db"
 
 	_ "github.com/lib/pq"
-)
-
-// Database connection configuration
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "postgres"
-	dbname   = "phone"
 )
 
 // main orchestrates the phone number normalization process:
@@ -25,13 +17,12 @@ const (
 // 3. Seeds test data
 // 4. Normalizes all phone numbers and consolidates duplicates
 func main() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
-	must(phonedb.Reset("postgres", psqlInfo, dbname))
+	cfg := config.Load()
 
-	psqlInfo = fmt.Sprintf("%s dbname=%s", psqlInfo, dbname)
-	must(phonedb.Migrate("postgres", psqlInfo))
+	must(phonedb.Reset("postgres", cfg.PSQLInfo(), cfg.DBName))
+	must(phonedb.Migrate("postgres", cfg.PSQLInfoWithDB(cfg.DBName)))
 
-	db, err := phonedb.Open("postgres", psqlInfo)
+	db, err := phonedb.Open("postgres", cfg.PSQLInfoWithDB(cfg.DBName))
 	must(err)
 	defer db.Close()
 
