@@ -1,3 +1,4 @@
+// Package main contains the phone number normalizer application.
 package main
 
 import (
@@ -9,6 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
+// Database connection configuration
 const (
 	host     = "localhost"
 	port     = 5432
@@ -17,6 +19,11 @@ const (
 	dbname   = "phone"
 )
 
+// main orchestrates the phone number normalization process:
+// 1. Resets the database
+// 2. Runs migrations to create tables
+// 3. Seeds test data
+// 4. Normalizes all phone numbers and consolidates duplicates
 func main() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s sslmode=disable", host, port, user, password)
 	must(phonedb.Reset("postgres", psqlInfo, dbname))
@@ -52,12 +59,15 @@ func main() {
 	}
 }
 
+// must panics if err is not nil. Used for error handling in main function.
 func must(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
 
+// normalize removes all non-digit characters from a phone number string.
+// Example: "(123) 456-7890" becomes "1234567890"
 func normalize(phone string) string {
 	re := regexp.MustCompile("\\D")
 	return re.ReplaceAllString(phone, "")

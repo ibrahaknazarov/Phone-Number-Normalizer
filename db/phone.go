@@ -1,3 +1,4 @@
+// Package db handles all database operations for the phone number normalizer.
 package db
 
 import (
@@ -6,12 +7,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Phone represents the phone_numbers table in the DB
+// Phone represents a phone number record in the phone_numbers table.
 type Phone struct {
 	ID     int
 	Number string
 }
 
+// Open establishes a connection to the database and returns a DB instance.
 func Open(driverName, dataSource string) (*DB, error) {
 	db, err := sql.Open(driverName, dataSource)
 	if err != nil {
@@ -20,14 +22,17 @@ func Open(driverName, dataSource string) (*DB, error) {
 	return &DB{db}, nil
 }
 
+// DB wraps the underlying sql.DB connection.
 type DB struct {
 	db *sql.DB
 }
 
+// Close closes the database connection.
 func (db *DB) Close() error {
 	return db.db.Close()
 }
 
+// Seed populates the database with test phone numbers in various formats.
 func (db *DB) Seed() error {
 	data := []string{
 		"1234567890",
@@ -47,6 +52,7 @@ func (db *DB) Seed() error {
 	return nil
 }
 
+// insertPhone adds a new phone number to the database.
 func insertPhone(db *sql.DB, phone string) (int, error) {
 	statement := `INSERT INTO phone_numbers(value) VALUES($1) RETURNING id`
 	var id int
@@ -57,6 +63,7 @@ func insertPhone(db *sql.DB, phone string) (int, error) {
 	return id, nil
 }
 
+// AllPhones retrieves all phone numbers from the database.
 func (db *DB) AllPhones() ([]Phone, error) {
 	rows, err := db.db.Query("SELECT id, value FROM phone_numbers")
 	if err != nil {
@@ -78,9 +85,11 @@ func (db *DB) AllPhones() ([]Phone, error) {
 	return ret, nil
 }
 
+// FindPhone looks up a phone number by value.
+// Returns nil if not found, error on database failure.
 func (db *DB) FindPhone(number string) (*Phone, error) {
 	var p Phone
-	row := db.db.QueryRow("SELECT * FROM phone_numbers WHERE value=$1", number)
+	row := db.db.QueryRow("SELECT id, value FROM phone_numbers WHERE value=$1", number)
 	err := row.Scan(&p.ID, &p.Number)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -92,18 +101,21 @@ func (db *DB) FindPhone(number string) (*Phone, error) {
 	return &p, nil
 }
 
+// UpdatePhone updates an existing phone number record.
 func (db *DB) UpdatePhone(p *Phone) error {
 	statement := `UPDATE phone_numbers SET value=$2 WHERE id=$1`
 	_, err := db.db.Exec(statement, p.ID, p.Number)
 	return err
 }
 
+// DeletePhone removes a phone number record by ID.
 func (db *DB) DeletePhone(id int) error {
 	statement := `DELETE FROM phone_numbers WHERE id=$1`
 	_, err := db.db.Exec(statement, id)
 	return err
 }
 
+// Migrate creates the phone_numbers table if it doesn't exist.
 func Migrate(driverName, dataSource string) error {
 	db, err := sql.Open(driverName, dataSource)
 	if err != nil {
@@ -116,6 +128,7 @@ func Migrate(driverName, dataSource string) error {
 	return db.Close()
 }
 
+// createPhoneNumbersTable creates the schema for storing phone numbers.
 func createPhoneNumbersTable(db *sql.DB) error {
 	statement := `
     CREATE TABLE IF NOT EXISTS phone_numbers (
@@ -126,6 +139,7 @@ func createPhoneNumbersTable(db *sql.DB) error {
 	return err
 }
 
+// Reset drops and recreates a database by name.
 func Reset(driverName, dataSource, dbName string) error {
 	db, err := sql.Open(driverName, dataSource)
 	if err != nil {
@@ -138,6 +152,7 @@ func Reset(driverName, dataSource, dbName string) error {
 	return db.Close()
 }
 
+// resetDB drops an existing database and creates a new one.
 func resetDB(db *sql.DB, name string) error {
 	_, err := db.Exec("DROP DATABASE IF EXISTS " + name)
 	if err != nil {
@@ -146,6 +161,7 @@ func resetDB(db *sql.DB, name string) error {
 	return createDB(db, name)
 }
 
+// createDB creates a new database.
 func createDB(db *sql.DB, name string) error {
 	_, err := db.Exec("CREATE DATABASE " + name)
 	if err != nil {
@@ -154,10 +170,10 @@ func createDB(db *sql.DB, name string) error {
 	return nil
 }
 
-// We don't use this right now.
+// getPhone retrieves a phone number by ID (currently unused).
 func getPhone(db *sql.DB, id int) (string, error) {
 	var number string
-	row := db.QueryRow("SELECT * FROM phone_numbers WHERE id=$1", id)
+	row := db.QueryRow("SELECT id, value FROM phone_numbers WHERE id=$1", id)
 	err := row.Scan(&id, &number)
 	if err != nil {
 		return "", err
