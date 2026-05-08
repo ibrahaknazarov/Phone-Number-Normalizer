@@ -20,10 +20,11 @@ FROM alpine:latest
 
 WORKDIR /root/
 
-# Copy the binary from builder
+# Copy the binary and static files from builder
 COPY --from=builder /app/phone .
+COPY --from=builder /app/index.html .
 
-# Expose any needed ports (if added in future)
+# Expose the web server port
 EXPOSE 8080
 
 # Run the application

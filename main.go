@@ -2,7 +2,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
 	"regexp"
 
 	"github.com/ibrahaknazarov/phone/config"
@@ -11,14 +14,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// main orchestrates the phone number normalization process:
-// 1. Resets the database
-// 2. Runs migrations to create tables
-// 3. Seeds test data
-// 4. Normalizes all phone numbers and consolidates duplicates
+// main orchestrates the phone number normalization process and starts a web server.
 func main() {
 	cfg := config.Load()
 
+	// Initial DB setup
 	must(phonedb.Reset("postgres", cfg.PSQLInfo(), cfg.DBName))
 	must(phonedb.Migrate("postgres", cfg.PSQLInfoWithDB(cfg.DBName)))
 
@@ -26,27 +26,93 @@ func main() {
 	must(err)
 	defer db.Close()
 
+	// Seed initial data
 	err = db.Seed()
 	must(err)
 
+	// Run initial normalization cleanup
+	syncDatabase(db)
+
+	// Handlers
+	http.HandleFunc("/", handleIndex)
+	http.HandleFunc("/api/normalize", handleNormalize)
+	http.HandleFunc("/api/phones", handleGetPhones(db))
+	http.HandleFunc("/api/sync", handleSync(db))
+
+	addr := ":8080"
+	fmt.Printf("Server starting on %s...\n", addr)
+	log.Fatal(http.ListenAndServe(addr, nil))
+}
+
+func syncDatabase(db *phonedb.DB) {
 	phones, err := db.AllPhones()
-	must(err)
+	if err != nil {
+		log.Printf("Error getting phones: %v", err)
+		return
+	}
 	for _, p := range phones {
-		fmt.Printf("Working on... %+v\n", p)
 		number := normalize(p.Number)
 		if number != p.Number {
-			fmt.Println("Updating or removing...", number)
 			existing, err := db.FindPhone(number)
-			must(err)
+			if err != nil {
+				log.Printf("Error finding phone %s: %v", number, err)
+				continue
+			}
 			if existing != nil {
-				must(db.DeletePhone(p.ID))
+				if err := db.DeletePhone(p.ID); err != nil {
+					log.Printf("Error deleting duplicate phone %d: %v", p.ID, err)
+				}
 			} else {
 				p.Number = number
-				must(db.UpdatePhone(&p))
+				if err := db.UpdatePhone(&p); err != nil {
+					log.Printf("Error updating phone %d: %v", p.ID, err)
+				}
 			}
-		} else {
-			fmt.Println("No changes required")
 		}
+	}
+}
+
+func handleIndex(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "index.html")
+}
+
+func handleNormalize(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var data struct {
+		Phone string `json:"phone"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&data); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	normalized := normalize(data.Phone)
+	json.NewEncoder(w).Encode(map[string]string{
+		"original":   data.Phone,
+		"normalized": normalized,
+	})
+}
+
+func handleGetPhones(db *phonedb.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		phones, err := db.AllPhones()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		json.NewEncoder(w).Encode(phones)
+	}
+}
+
+func handleSync(db *phonedb.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		syncDatabase(db)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprintf(w, "Database synced and normalized")
 	}
 }
 

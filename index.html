@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phonely | The Ultra-Premium Phone Normalizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .hero-gradient { background: radial-gradient(circle at top right, #fdf2f8, transparent), radial-gradient(circle at bottom left, #eff6ff, transparent); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 hero-gradient min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 glass">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <div class="bg-indigo-600 p-1.5 rounded-lg">
+                        <i data-lucide="phone" class="w-6 h-6 text-white"></i>
+                    </div>
+                    <span class="text-xl font-extrabold tracking-tight text-slate-900">Phonely</span>
+                </div>
+                <div class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+                    <a href="#features" class="hover:text-indigo-600 transition">Features</a>
+                    <a href="#live" class="hover:text-indigo-600 transition">Live Demo</a>
+                    <a href="#status" class="hover:text-indigo-600 transition">Database</a>
+                </div>
+                <button class="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-slate-800 transition shadow-lg shadow-slate-200">
+                    Launch App
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold mb-6">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                </span>
+                NEW: V2.0 IS NOW LIVE
+            </div>
+            <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-b from-slate-900 to-slate-700">
+                Normalize Phone Data <br> with <span class="text-indigo-600">Unrivaled Precision</span>
+            </h1>
+            <p class="text-xl text-slate-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+                The enterprise-grade solution for cleaning, formatting, and de-duplicating phone number records. Scalable, secure, and blazingly fast.
+            </p>
+
+            <!-- Live Demo Tool -->
+            <div id="live" class="glass rounded-3xl p-8 shadow-2xl max-w-lg mx-auto">
+                <h3 class="text-lg font-bold mb-6 flex items-center gap-2">
+                    <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
+                    Try the Live Normalizer
+                </h3>
+                <div class="flex flex-col gap-4">
+                    <div class="relative">
+                        <input type="text" id="phoneInput" placeholder="(123) 456-7890" class="w-full px-5 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition outline-none text-lg">
+                        <div class="absolute right-4 top-4 text-slate-400">
+                            <i data-lucide="keyboard" class="w-6 h-6"></i>
+                        </div>
+                    </div>
+                    <button onclick="normalizePhone()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold text-lg hover:bg-indigo-700 transition shadow-xl shadow-indigo-100 flex items-center justify-center gap-2">
+                        Normalize Now
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </button>
+                    <div id="result" class="hidden mt-4 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-300">
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Result</p>
+                        <p id="normalizedOutput" class="text-2xl font-mono font-bold text-indigo-600"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="py-24 bg-white border-y border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-12">
+                <div class="flex flex-col gap-4">
+                    <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600">
+                        <i data-lucide="layers" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold">Deep Cleaning</h4>
+                    <p class="text-slate-600">Advanced regex-driven engine removes symbols, letters, and extraneous characters with 99.9% accuracy.</p>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="w-12 h-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600">
+                        <i data-lucide="copy" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold">De-duplication</h4>
+                    <p class="text-slate-600">Intelligent conflict resolution merges duplicate records automatically during the normalization process.</p>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600">
+                        <i data-lucide="database" class="w-6 h-6"></i>
+                    </div>
+                    <h4 class="text-xl font-bold">SQL Integration</h4>
+                    <p class="text-slate-600">Native PostgreSQL support ensuring your data integrity is maintained at the source level.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Database Status -->
+    <section id="status" class="py-24 px-4">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-3xl font-bold mb-2">Live Database Preview</h2>
+                    <p class="text-slate-600 text-lg">Real-time view of processed records in your PostgreSQL instance.</p>
+                </div>
+                <button onclick="syncDB()" class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl font-semibold text-sm hover:bg-slate-50 transition shadow-sm">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    Sync & Clean DB
+                </button>
+            </div>
+
+            <div class="bg-white rounded-3xl overflow-hidden shadow-xl border border-slate-200">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr>
+                            <th class="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">ID</th>
+                            <th class="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest">Raw Data</th>
+                            <th class="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-widest text-right">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="phoneTable" class="divide-y divide-slate-100">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-slate-200 text-center text-slate-400 text-sm">
+        <p>&copy; 2024 Phonely Enterprise. Built with Go and Tailwind.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        async function normalizePhone() {
+            const input = document.getElementById('phoneInput').value;
+            if (!input) return;
+
+            const response = await fetch('/api/normalize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone: input })
+            });
+            const data = await response.json();
+
+            const resultDiv = document.getElementById('result');
+            const output = document.getElementById('normalizedOutput');
+
+            resultDiv.classList.remove('hidden');
+            output.innerText = data.normalized;
+        }
+
+        async function fetchPhones() {
+            try {
+                const response = await fetch('/api/phones');
+                if (!response.ok) return;
+                const phones = await response.json();
+                const table = document.getElementById('phoneTable');
+                table.innerHTML = '';
+
+                if (phones && phones.length > 0) {
+                    phones.forEach(p => {
+                        const row = `
+                            <tr class="hover:bg-slate-50 transition">
+                                <td class="px-8 py-5 font-medium text-slate-400">#${p.ID}</td>
+                                <td class="px-8 py-5 font-mono text-slate-900">${p.Number}</td>
+                                <td class="px-8 py-5 text-right">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Normalized
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+                        table.innerHTML += row;
+                    });
+                } else {
+                    table.innerHTML = '<tr><td colspan="3" class="px-8 py-10 text-center text-slate-400">No records found.</td></tr>';
+                }
+            } catch (e) {
+                console.error("Failed to fetch phones", e);
+            }
+        }
+
+        async function syncDB() {
+            await fetch('/api/sync');
+            fetchPhones();
+        }
+
+        // Initial load
+        fetchPhones();
+    </script>
+</body>
+</html>

@@ -1,16 +1,15 @@
-# Phone Number Normalizer
+# Phonely | Phone Number Normalizer
 
-A Go application that normalizes phone numbers stored in a PostgreSQL database by removing formatting characters and consolidating duplicates.
+An ultra-premium Go-based web application that normalizes phone numbers stored in a PostgreSQL database by removing formatting characters and consolidating duplicates.
 
 ## Features
 
-- Connects to PostgreSQL database
-- Normalizes phone numbers (removes dashes, spaces, parentheses)
-- Detects and handles duplicate normalized numbers
-- Seeds test data automatically
-- Environment-based configuration
-- Docker and Docker Compose support
-- Comprehensive test coverage
+- **Modern Web Interface**: $100K-style landing page with real-time normalization demo.
+- **Automated Sync**: Normalize and de-duplicate entire database tables with one click.
+- **Deep Cleaning**: Advanced regex-driven normalization (removes dashes, spaces, parentheses, letters).
+- **PostgreSQL Integration**: Seamlessly connects and updates records at the source.
+- **Docker Ready**: Fully containerized with Docker Compose support.
+- **Enterprise-Grade**: Comprehensive test coverage and scalable architecture.
 
 ## Prerequisites
 
@@ -51,9 +50,11 @@ go test -v
 # Build
 make build
 
-# Run
+# Run (starts server on :8080)
 make run
 ```
+
+Access the dashboard at `http://localhost:8080`.
 
 ### Using Make Commands
 
